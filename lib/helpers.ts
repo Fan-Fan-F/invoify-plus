@@ -50,6 +50,11 @@ const formatNumberWithCommas = (number: number) => {
  * @returns {string} Number in words
  */
 const formatPriceToString = (price: number, currency: string): string => {
+    // Guard against NaN, non-finite, or negative numbers
+    if (typeof price !== "number" || isNaN(price) || !isFinite(price) || price < 0) {
+        return "Zero";
+    }
+
     // Initialize variables
     let decimals : number;
     let beforeDecimal: string | null = null;
@@ -69,6 +74,8 @@ const formatPriceToString = (price: number, currency: string): string => {
         decimals = decimalIndex !== -1 ? priceString.split('.')[1].length : 0;
     }
 
+    decimals = Math.min(Math.max(decimals, 0), 4);
+
     // Ensure the price is rounded to the appropriate decimal places
     const roundedPrice = parseFloat(price.toFixed(decimals));
 
@@ -76,22 +83,36 @@ const formatPriceToString = (price: number, currency: string): string => {
     const integerPart = Math.floor(roundedPrice);
     
     const fractionalMultiplier = Math.pow(10, decimals);
-    const fractionalPart = Math.round((roundedPrice - integerPart) * fractionalMultiplier);
-
-    // Convert the integer part to words with a capitalized first letter
-    const integerPartInWords = numberToWords
-        .toWords(integerPart)
-        .replace(/^\w/, (c) => c.toUpperCase());
-
-    // Convert fractional part to words
-    const fractionalPartInWords =
-        fractionalPart > 0
-            ? numberToWords.toWords(fractionalPart)
-            : null;
+    // Round properly to avoid JavaScript IEEE-754 floating point subtraction inaccuracies
+    const fractionalPart = decimals > 0
+        ? Math.round((Math.round(roundedPrice * fractionalMultiplier) % fractionalMultiplier))
+        : 0;
 
     // Handle zero values for both parts
     if (integerPart === 0 && fractionalPart === 0) {
         return "Zero";
+    }
+
+    // Convert the integer part to words with a capitalized first letter
+    let integerPartInWords = "Zero";
+    try {
+        if (integerPart > 0) {
+            integerPartInWords = numberToWords
+                .toWords(integerPart)
+                .replace(/^\w/, (c) => c.toUpperCase());
+        }
+    } catch {
+        integerPartInWords = integerPart.toString();
+    }
+
+    // Convert fractional part to words
+    let fractionalPartInWords: string | null = null;
+    try {
+        if (fractionalPart > 0) {
+            fractionalPartInWords = numberToWords.toWords(fractionalPart);
+        }
+    } catch {
+        fractionalPartInWords = fractionalPart > 0 ? fractionalPart.toString() : null;
     }
 
     // Combine the parts into the final string

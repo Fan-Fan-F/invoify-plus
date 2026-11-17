@@ -65,7 +65,7 @@ export const ACCENT_PRESETS = [
  * everything else still renders in the chosen family.
  */
 const GLYPH_FALLBACK =
-    "'IBM Plex Sans', 'Noto Sans Hebrew', 'Noto Sans Arabic', system-ui, sans-serif";
+    "'IBM Plex Sans', 'Noto Sans Hebrew', 'Noto Sans Arabic', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif";
 
 export const INVOICE_FONTS: {
     id: InvoiceFontId;

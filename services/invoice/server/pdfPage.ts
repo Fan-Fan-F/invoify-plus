@@ -66,13 +66,24 @@ async function acquirePage(): Promise<Page> {
  * Runs `fn` against the shared page, one caller at a time.
  *
  * A page that throws is discarded rather than reused, since it may be left
- * with a half-loaded document.
+ * with a half-loaded document. Includes a timeout safeguard to ensure a hanging
+ * render never permanently starves the shared lock queue.
  */
 export async function withPdfPage<T>(fn: (page: Page) => Promise<T>): Promise<T> {
+    const timeoutPromise = new Promise<never>((_, reject) => {
+        const timer = setTimeout(() => {
+            reject(new Error("PDF render timed out after 45s"));
+        }, 45000);
+        // Avoid keeping the Node event loop alive purely for the timeout timer
+        if (typeof timer.unref === "function") {
+            timer.unref();
+        }
+    });
+
     const run = lock.then(async () => {
         const page = await acquirePage();
         try {
-            return await fn(page);
+            return await Promise.race([fn(page), timeoutPromise]);
         } catch (error) {
             pagePromise = null;
             await page.close().catch(() => undefined);

@@ -46,12 +46,53 @@ export async function exportInvoiceService(req: NextRequest) {
                 });
             }
             case ExportTypes.CSV: {
-                //? Can pass specific fields to async parser. Empty = All
+                // Flatten invoice structure so line items each get an accounting-friendly tabular row
+                const rows =
+                    body.details.items && body.details.items.length > 0
+                        ? body.details.items.map((item) => ({
+                              invoiceNumber: body.details.invoiceNumber,
+                              invoiceDate: body.details.invoiceDate,
+                              dueDate: body.details.dueDate,
+                              currency: body.details.currency,
+                              senderName: body.sender.name,
+                              senderEmail: body.sender.email,
+                              receiverName: body.receiver.name,
+                              receiverEmail: body.receiver.email,
+                              itemName: item.name,
+                              itemDescription: item.description || "",
+                              quantity: item.quantity,
+                              unitPrice: item.unitPrice,
+                              itemTotal: item.total,
+                              subTotal: body.details.subTotal,
+                              totalAmount: body.details.totalAmount,
+                          }))
+                        : [
+                              {
+                                  invoiceNumber: body.details.invoiceNumber,
+                                  invoiceDate: body.details.invoiceDate,
+                                  dueDate: body.details.dueDate,
+                                  currency: body.details.currency,
+                                  senderName: body.sender.name,
+                                  senderEmail: body.sender.email,
+                                  receiverName: body.receiver.name,
+                                  receiverEmail: body.receiver.email,
+                                  itemName: "",
+                                  itemDescription: "",
+                                  quantity: 0,
+                                  unitPrice: 0,
+                                  itemTotal: 0,
+                                  subTotal: body.details.subTotal,
+                                  totalAmount: body.details.totalAmount,
+                              },
+                          ];
+
                 const parser = new AsyncParser();
-                const csv = await parser.parse(body).promise();
-                return new NextResponse(csv, {
+                const rawCsv = await parser.parse(rows).promise();
+                // Prepend UTF-8 BOM so Excel and other spreadsheet viewers render non-ASCII characters without encoding issues
+                const csvWithBom = `\uFEFF${rawCsv}`;
+                return new NextResponse(csvWithBom, {
                     headers: {
-                        "Content-Type": "text/csv",
+                        "Content-Type": "text/csv; charset=utf-8",
                         "Content-Disposition":
                             "attachment; filename=invoice.csv",
                     },

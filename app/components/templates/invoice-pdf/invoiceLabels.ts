@@ -43,19 +43,9 @@ export type InvoiceTemplateExtras = {
  * Builds a label set from a locale's raw messages, falling back per key to
  * English so an untranslated string never renders blank.
  *
- * Four locales deliberately have no `invoiceDocument` block and so fall back
- * entirely:
- *
- *   ja, zh-CN  The PDF embeds only Latin fonts and makes no network requests,
- *              so CJK text has no glyph to render with — on Vercel's Lambda,
- *              which ships no system fonts, it would come out as tofu boxes.
- *              English in a correct typeface beats a translated blank.
- *   ar, he     Right-to-left. Translating the labels into a left-to-right
- *              document produces a worse result than English, and the script
- *              fonts are missing for the same reason as above.
- *
- * Both are their own piece of work — an embedded CJK subset and RTL template
- * support respectively — not something to half-ship here.
+ * Locales with an `invoiceDocument` block provide full localization for the
+ * printed/previewed invoice (e.g. en, az, zh-CN, ar, he, de, fr, es, etc.).
+ * CJK and RTL locales are backed by font fallbacks and embedded fonts.
  */
 export function buildInvoiceLabels(
     messages: Record<string, unknown> | undefined

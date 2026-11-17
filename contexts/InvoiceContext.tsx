@@ -70,6 +70,7 @@ const defaultInvoiceContext = {
   previewPdfInTab: () => {},
   saveInvoice: () => {},
   deleteInvoice: (index: number) => {},
+  deleteInvoices: (indices: number[]) => {},
   sendPdfToMail: (email: string): Promise<void> => Promise.resolve(),
   exportInvoiceAs: (exportAs: ExportTypes) => {},
   importInvoice: (file: File) => {},
@@ -482,6 +483,20 @@ export const InvoiceContextProvider = ({
   };
 
   /**
+   * Delete multiple invoices from local storage based on the given indices.
+   *
+   * @param {number[]} indices - Array of invoice indices to delete.
+   */
+  const deleteInvoices = (indices: number[]) => {
+    if (!indices || indices.length === 0) return;
+    const toDelete = new Set(indices);
+    const updatedInvoices = savedInvoices.filter((_, idx) => !toDelete.has(idx));
+    setSavedInvoices(updatedInvoices);
+
+    void writeSecure(SAVED_INVOICES_KEY, updatedInvoices);
+  };
+
+  /**
    * Send the invoice PDF to the specified email address.
    *
    * @param {string} email - The email address to which the Invoice PDF will be sent.
@@ -596,6 +611,7 @@ export const InvoiceContextProvider = ({
         previewPdfInTab,
         saveInvoice,
         deleteInvoice,
+        deleteInvoices,
         sendPdfToMail,
         exportInvoiceAs,
         importInvoice,

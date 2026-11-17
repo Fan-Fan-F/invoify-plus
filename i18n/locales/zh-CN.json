@@ -1,10 +1,10 @@
 {
   "form": {
     "title": "发票",
-    "description": "创建发票",
+    "description": "创建专业发票",
     "newInvBadge": "新发票",
     "wizard": {
-      "fromAndTo": "发件人 & 收件人",
+      "fromAndTo": "开票方 & 收票方",
       "invoiceDetails": "发票详情",
       "lineItems": "项目明细",
       "paymentInfo": "支付信息",
@@ -12,7 +12,14 @@
       "next": "下一步",
       "back": "返回",
       "upNext": "下一步",
-      "sections": "章节"
+      "sections": "章节",
+      "stepLabel": "步骤",
+      "hasErrors": "存在错误",
+      "progressLabel": "发票填写步骤",
+      "backTooltip": "返回上一步",
+      "nextTooltip": "进入下一步",
+      "stateComplete": "已完成",
+      "stateIncomplete": "未完成"
     },
     "steps": {
       "fromAndTo": {
@@ -25,15 +32,15 @@
         "country": "国家",
         "email": "邮箱",
         "phone": "电话",
-        "addCustomInput": "添加自定义输入",
-        "sender": "发件人",
-        "receiver": "收件人"
+        "addCustomInput": "添加自定义字段",
+        "sender": "开票方",
+        "receiver": "收票方"
       },
       "invoiceDetails": {
         "heading": "发票详情",
         "invoiceLogo": {
-          "label": "发票Logo",
-          "placeholder": "点击上传图片"
+          "label": "发票 Logo",
+          "placeholder": "点击上传企业徽标"
         },
         "invoiceNumber": "发票编号",
         "issuedDate": "开票日期",
@@ -53,19 +60,19 @@
       },
       "paymentInfo": {
         "heading": "支付信息",
-        "bankName": "银行名称",
-        "accountName": "账户名",
-        "accountNumber": "账号"
+        "bankName": "开户银行",
+        "accountName": "账户名称",
+        "accountNumber": "银行账号"
       },
       "summary": {
-        "heading": "摘要",
+        "heading": "摘要与结算",
         "signature": {
           "heading": "签名",
-          "placeholder": "点击添加签名",
-          "description": "选择一种方法为发票添加签名",
+          "placeholder": "点击添加电子签名",
+          "description": "选择一种方式为发票添加签名",
           "draw": "手写",
-          "type": "输入",
-          "upload": "上传"
+          "type": "打字",
+          "upload": "上传图片"
         },
         "additionalNotes": "附加说明",
         "paymentTerms": "付款条款",
@@ -74,10 +81,22 @@
         "shipping": "运费",
         "subTotal": "小计",
         "totalAmount": "总金额",
-        "includeTotalInWords": "用文字显示总金额？",
+        "includeTotalInWords": "大写显示总金额？",
         "yes": "是",
-        "no": "否"
+        "no": "否",
+        "remove": "移除",
+        "terms": {
+          "dueOnReceipt": "见票即付",
+          "net15": "15天内付款",
+          "net30": "30天内付款",
+          "net60": "60天内付款"
+        }
       }
+    },
+    "autosave": {
+      "saving": "保存中…",
+      "saved": "已保存",
+      "justNow": "刚刚"
     }
   },
   "actions": {
@@ -86,12 +105,44 @@
     "loadInvoice": "加载发票",
     "exportInvoice": "导出发票",
     "newInvoice": "新建发票",
-    "generatePdf": "生成PDF",
-    "pdfView": "PDF视图"
+    "generatePdf": "生成 PDF",
+    "pdfView": "PDF 视图",
+    "preview": "预览",
+    "previewTitle": "发票实时预览",
+    "generatePdfLoading": "生成中…",
+    "generatePdfTooltip": "生成高品质发票 PDF 文件",
+    "loadInvoiceTooltip": "打开已保存的发票记录",
+    "exportInvoiceTooltip": "将此发票导出为文件",
+    "newInvoiceTooltip": "创建一张空白新发票",
+    "resetForm": "重置表单",
+    "resetFormTitle": "确定重置表单？",
+    "resetFormDescription": "此操作将清空所有已输入字段和本地草稿。",
+    "resetFormConfirm": "重置",
+    "resetFormTooltip": "清空表单字段与已保存草稿",
+    "livePreview": "实时预览",
+    "finalPdf": "最终 PDF",
+    "backToLivePreview": "返回实时预览",
+    "previewInTab": "新标签页预览",
+    "download": "下载 PDF",
+    "print": "打印",
+    "save": "保存发票",
+    "sendToMail": "发送邮件",
+    "openPdf": "打开 PDF",
+    "pdfReady": "发票 PDF 已生成就绪。",
+    "previewInTabTooltip": "在浏览器新标签页中预览 PDF",
+    "downloadTooltip": "下载发票 PDF 文件到本地",
+    "printTooltip": "直接打印发票",
+    "saveTooltip": "在本地安全加密保存发票",
+    "sendToMailTooltip": "将发票 PDF 以附件形式发送至指定邮箱",
+    "importJson": "导入 JSON",
+    "importJsonTooltip": "从 JSON 发票文件导入数据",
+    "moreActions": "更多操作",
+    "fitToScreen": "适应屏幕",
+    "actualSize": "实际大小"
   },
   "footer": {
     "developedBy": "开发人员",
-    "guide": "使用方法"
+    "guide": "使用指南"
   },
   "voiceInput": {
     "voiceInput": "语音录入",
@@ -120,5 +171,138 @@
     "item": "商品",
     "cancel": "取消",
     "confirm": "确认添加"
+  },
+  "navbar": {
+    "settings": "设置",
+    "openSettings": "打开设置",
+    "language": "语言"
+  },
+  "invoiceDocument": {
+    "invoiceNumber": "发票编号",
+    "from": "开票方",
+    "billTo": "收票方",
+    "invoiceDate": "开票日期",
+    "dueDate": "付款截止日",
+    "item": "项目",
+    "qty": "数量",
+    "rate": "单价",
+    "amount": "金额",
+    "subtotal": "小计",
+    "discount": "折扣",
+    "tax": "税费",
+    "shipping": "运费",
+    "total": "总计",
+    "totalInWords": "大写总金额",
+    "additionalNotes": "附加说明",
+    "paymentTerms": "付款条款",
+    "signature": "签名",
+    "paymentInfoHeading": "请向以下账户支付款项",
+    "bankName": "开户银行",
+    "accountName": "账户名称",
+    "accountNumber": "银行账号",
+    "contactHeading": "如有任何疑问，请通过以下方式联系：",
+    "logoAlt": "{name} 的徽标",
+    "signatureAlt": "{name} 的签名"
+  },
+  "gallery": {
+    "title": "选择发票模板",
+    "description": "挑选版式风格，设置主题色、字体与排版紧凑度，实时预览效果。",
+    "templateLabel": "模板",
+    "changeTemplate": "更换模板",
+    "accent": "强调色",
+    "font": "字体",
+    "density": "版面密度",
+    "comfortable": "舒适",
+    "compact": "紧凑",
+    "spacious": "宽松",
+    "customColor": "自定义颜色",
+    "reset": "重置",
+    "appearanceControls": "外观设置",
+    "changeAppearance": "更改发票外观"
+  },
+  "meta": {
+    "title": "免费在线发票生成器 | Invoify",
+    "description": "几分钟内制作专业发票。13套精美模板，自定义主题色与Logo，一键导出高品质PDF或邮件发送。完全免费，无需注册账户。",
+    "ogTitle": "免费在线发票生成器",
+    "ogDescription": "13套发票模板，在线填写，直接导出PDF，本地加密保护隐私。"
+  },
+  "landing": {
+    "h1": "免费在线发票生成器",
+    "intro": "Invoify 在浏览器中快速构建专业发票并导出高品质 PDF。从13套精美模板中随心挑选，设置品牌色彩与字体，添加企业 Logo 和电子签名，随时下载、打印或通过邮件直接发送给客户。数据完全在本地加密存储，无需注册任何账户。",
+    "guideH1": "如何使用 Invoify",
+    "guideIntro": "了解发票生成器的强大功能与使用方法：探索13套发票模板、个性化定制选项，以及从填写表单到导出高品质PDF的简便流程。",
+    "featuresHeading": "核心特性",
+    "features": {
+      "1": {
+        "title": "13 套精美模板",
+        "body": "精心设计的不同版式风格，绝非单一布局换色——包含全宽页眉、侧边导轨、居中抬头、清晰表格及极简收据风格。每套模板均遵循标准 A4 规格，自动多页排版。"
+      },
+      "2": {
+        "title": "个性化定制",
+        "body": "从预设强调色或任意十六进制色值中挑选，支持多种字体，可调整布局密度以容纳多行明细。轻松上传企业 Logo，支持手写、打字或图片签名。"
+      },
+      "3": {
+        "title": "原生高品质 PDF",
+        "body": "采用现代排版引擎，内置矢量字体与 CJK 字体族回退，确保导出的 PDF 文件在任何设备上完美展现。一键下载、打印或通过邮件直接发给客户。"
+      }
+    },
+    "howHeading": "使用步骤",
+    "how": {
+      "1": {
+        "title": "填写明细信息",
+        "body": "输入发票双方信息、明细项目、金额及税率，支持语音录入快速识别与智能计算。"
+      },
+      "2": {
+        "title": "定制外观样式",
+        "body": "打开模板库实时预览不同模板、品牌色系及排版间距，打造专属品牌形象。"
+      },
+      "3": {
+        "title": "生成与导出 PDF",
+        "body": "一键生成标准 A4 PDF，支持批量管理与 JSON/CSV 数据备份导出。"
+      }
+    },
+    "faqHeading": "常见问题",
+    "faq": {
+      "1": {
+        "q": "Invoify 是真的完全免费吗？",
+        "a": "是的。没有付费专区，没有试用期，无需注册账号。发票生成器、全部13套模板和PDF导出均可免费使用。"
+      },
+      "2": {
+        "q": "需要注册账号才能使用吗？",
+        "a": "不需要。您的发票在填写时保存在浏览器本地，已保存发票均加密存储于本地存储中，不上传至任何服务器。"
+      },
+      "3": {
+        "q": "可以添加公司 Logo 吗？",
+        "a": "可以。在发票详情步骤中上传图片，即可展示在12套模板中（极简 Minimal 模板除外）。"
+      },
+      "4": {
+        "q": "支持哪些货币和语言？",
+        "a": "支持超过170种法定货币及格式化显示，界面支持18种语言，且发票模板支持地道的中文等多语言呈现。"
+      },
+      "5": {
+        "q": "生成 PDF 后还可以修改发票吗？",
+        "a": "可以。修改任意字段即可立即返回实时编辑预览，确认无误后随时重新生成。"
+      }
+    }
+  },
+  "clients": {
+    "emptyTooltip": "先保存客户信息以便在此快捷选用",
+    "heading": "已保存的客户",
+    "pick": "选择客户",
+    "pickTooltip": "从已保存客户中快速填入此表单",
+    "remove": "移除",
+    "save": "保存客户",
+    "saveTooltip": "保存该客户信息以便下次发票快速复用",
+    "saved": "已保存"
+  },
+  "senders": {
+    "emptyTooltip": "先保存发件人信息以便在此快捷选用",
+    "heading": "已保存的发件人",
+    "pick": "选择发件人",
+    "pickTooltip": "从已保存发件人中快速填入此表单",
+    "remove": "移除",
+    "save": "保存发件人",
+    "saveTooltip": "保存该发件人信息以便下次发票快速复用",
+    "saved": "已保存"
   }
 }

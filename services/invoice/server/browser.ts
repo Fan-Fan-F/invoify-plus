@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import type { Browser } from "puppeteer-core";
 
 
@@ -13,6 +14,27 @@ import type { Browser } from "puppeteer-core";
  * a cold start share one launch rather than each starting their own.
  */
 let browserPromise: Promise<Browser> | null = null;
+
+/**
+ * Common system Chromium executable paths across Linux distributions (Alpine, Debian, Ubuntu).
+ */
+const COMMON_CHROMIUM_PATHS = [
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+];
+
+function findSystemChromium(): string | undefined {
+    const envPath =
+        process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_BIN;
+    if (envPath && fs.existsSync(envPath)) return envPath;
+
+    for (const binPath of COMMON_CHROMIUM_PATHS) {
+        if (fs.existsSync(binPath)) return binPath;
+    }
+    return undefined;
+}
 
 /**
  * True only on a serverless platform, where the bundled Chromium binary from
@@ -32,6 +54,13 @@ function isServerless(): boolean {
 }
 
 async function launchBrowser(): Promise<Browser> {
+    const defaultArgs = [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+    ];
+
     if (isServerless()) {
         const chromium = (await import("@sparticuz/chromium")).default;
         const puppeteer = (await import("puppeteer-core")).default;
@@ -45,13 +74,35 @@ async function launchBrowser(): Promise<Browser> {
         });
     }
 
-    // Everywhere else — local dev, `next start`, a self-hosted server, CI —
-    // use the full `puppeteer` package, which ships its own Chromium.
-    const puppeteer = (await import("puppeteer")).default;
-    return puppeteer.launch({
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        headless: true,
-    }) as unknown as Promise<Browser>;
+    // 1. If explicit executable path or system Chromium binary is available,
+    // use puppeteer-core directly (essential for Alpine Docker and self-hosted Linux).
+    const systemChromium = findSystemChromium();
+    if (systemChromium) {
+        const puppeteerCore = (await import("puppeteer-core")).default;
+        return puppeteerCore.launch({
+            args: defaultArgs,
+            executablePath: systemChromium,
+            headless: true,
+        });
+    }
+
+    // 2. Try the full `puppeteer` package (installed during local dev or non-pruned builds)
+    try {
+        const puppeteer = (await import("puppeteer")).default;
+        return (await puppeteer.launch({
+            args: defaultArgs,
+            headless: true,
+        })) as unknown as Browser;
+    } catch {
+        // 3. Fallback when `puppeteer` devDependency was pruned (e.g. in Dockerfile production stage)
+        const chromium = (await import("@sparticuz/chromium")).default;
+        const puppeteer = (await import("puppeteer-core")).default;
+        return puppeteer.launch({
+            args: [...chromium.args, "--disable-dev-shm-usage"],
+            executablePath: await chromium.executablePath(),
+            headless: true,
+        });
+    }
 }
 
 function isAlive(browser: Browser): boolean {
